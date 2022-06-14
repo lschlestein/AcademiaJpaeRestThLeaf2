@@ -46,15 +46,34 @@ public class ProdutoController {
 
 	}
 
-	@DeleteMapping("/excluir/{id}")
+	@GetMapping("/excluir/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	void deleteproduto(@PathVariable Long id) {
+	public String deleteproduto(@PathVariable Long id, Model model) {
 		produtoRepository.deleteById(id);
+		List<Produto> listaProdutos = produtoRepository.findAll();
+		model.addAttribute("produtos", listaProdutos);
+		return "listarProdutos";
+	}
+	
+	@PostMapping("/excluir/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	public String deleteprodutopost(@PathVariable Long id, Model model) {
+		produtoRepository.deleteById(id);
+		List<Produto> listaProdutos = produtoRepository.findAll();
+		model.addAttribute("produtos", listaProdutos);
+		return "listarProdutos";
 	}
 
-	@PutMapping("/alterar/{id}")
-	Produto updateproduto(@RequestBody Produto novoProduto, @PathVariable Long id) {
+	@GetMapping ("/alterar/{id}")
+	public String altProdutos(@PathVariable Long id, Model model) {
 		Produto p = produtoRepository.findById(id).get();
+		model.addAttribute("produto", p);
+		return "alterarProduto";
+	}
+	
+	@PostMapping("/alterar")
+	public String updateproduto(@ModelAttribute Produto novoProduto, Model model) {
+		Produto p = produtoRepository.findById(novoProduto.getId()).get();
 		if ((novoProduto.getCodigo() != 0)) {
 			p.setCodigo(novoProduto.getCodigo());
 		}
@@ -64,7 +83,10 @@ public class ProdutoController {
 		p.setCategoria(novoProduto.getCategoria());
 		p.setValor(novoProduto.getValor());
 		p.setQuantidade(novoProduto.getQuantidade());
-		return produtoRepository.save(p);
+		produtoRepository.save(p);
+		List<Produto> listaProdutos = produtoRepository.findAll();
+		model.addAttribute("produtos", listaProdutos);
+		return "listarProdutos";
 
 	}
 
